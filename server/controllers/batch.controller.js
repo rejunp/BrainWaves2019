@@ -1,77 +1,40 @@
 const path = require('path');
 const cron = require('node-cron');
+const utils = require('../utils/main.util');
 const fs = require('fs');
 const swift = require('./swiftMsg.controller');
 
 const readFiles = (agent, dirname, onError) => {
     console.log('Inside readFiles');
-    let processedDest = path.join(dirname, 'processed');
+    let processedDest = path.join(dirname, 'processed', utils.getDateString() + '_');
     let data = [];
-    let tmp;
-    var uploadFlag = false;
+    // let tmp;
+    //var uploadFlag = false;
     //console.log(`Dest --> ${processedDest}`);
-    fs.readdirSync(dirname).reduce((acc, filename) => {
+    data = fs.readdirSync(dirname).reduce((acc, filename) => {
         let filePath = dirname + path.sep + filename;
-        console.log(`To Process:${filePath}`);
-        console.log(`isDir ? ${fs.lstatSync(filePath).isDirectory()}`);
+        //console.log(`To Process:${filePath}`);
+        //console.log(`isDir ? ${fs.lstatSync(filePath).isDirectory()}`);
         if (!fs.lstatSync(filePath).isDirectory()) {
-            fs.readFileSync(filePath, 'utf-8', function (err, content) {
-                if (err) {
-                    onError(err);
-                    return;
-                }
-                console.log('going to process file...');
-                tmp = swift.swiftMsgParser(filename, content);
-                console.log('processing done ---' + tmp);
-                //tmp = onFileContent(filename, content);
-                data = [...data, tmp];
-                console.log('processing done 2222---' + tmp);
-                uploadFlag = true;
-                fs.rename(filePath, processedDest + path.sep + filename, (err) => {
-                    if (err) throw err;
-                    console.log(filename + 'Moved to processed!');
-                });
+            let content = fs.readFileSync(filePath, 'utf-8');
+            //console.log('going to process file...');
+            //tmp = swift.swiftMsgParser(filename, content);
+            //console.log('processing done ---' + acc);
+            //tmp = onFileContent(filename, content);
+            acc = [...acc, swift.swiftMsgParser(filename, content)];
+            //console.log('processing done 2222---' + acc);
+            //uploadFlag = true;
+            fs.rename(filePath, processedDest + filename, (err) => {
+                if (err) throw err;
+                console.log(filename + 'Moved to processed!');
             });
-
         }
-
+        return acc;
     }, []);
-    fs.readdir(dirname, function (err, filenames) {
-        if (err) {
-            onError(err);
-            return;
-        }
-        filenames.forEach(function (filename) {
-            let filePath = dirname + path.sep + filename;
-            console.log(`To Process:${filePath}`);
-            console.log(`isDir ? ${fs.lstatSync(filePath).isDirectory()}`);
-            if (!fs.lstatSync(filePath).isDirectory()) {
-                let content = fs.readFileSync(filePath, 'utf-8');
-                console.log('going to process file...');
-                tmp = swift.swiftMsgParser(filename, content);
-                console.log('processing done ---' + tmp);
-                //tmp = onFileContent(filename, content);
-                data = [...data, tmp];
-                console.log('processing done 2222---' + tmp);
-                uploadFlag = true;
-                fs.rename(filePath, processedDest + path.sep + filename, (err) => {
-                    if (err) throw err;
-                    console.log(filename + 'Moved to processed!');
-                });
-            }
-        });
-        console.log("---------------------------------.>upload " + uploadFlag);
-        if (uploadFlag) {
-            console.log("about to upload...");
-            console.log("========================================================================");
-            console.log(data);
-            console.log("========================================================================");
-            swift.swiftMsgUpload(agent, data);
-        } else {
-            console.log("Oops! Nothing to Upload!");
-        }
 
-    });
+    console.log("Length ->" + data.length);
+    if (data.length > 0)
+        swift.swiftMsgUpload(agent, data);
 
 }
 /*
@@ -95,6 +58,9 @@ cron.schedule("10 * * * * *", function () {
         throw err;
     });
 
+    readFiles('client_msgs', clientMsgPath, function (err) {
+        throw err;
+    });
 
 });
 
