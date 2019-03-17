@@ -20,18 +20,67 @@
     </div>
     <div class="container">
         <div class="row">
-            <div class="col">
+            <div class="col-1">
 
             </div>
             <div class="col">
-                <h1> Matched : <span id="ematch"></span></h1>
-                <h1> Partial Match : <span id="pmatch"></span></h1>
-                <h1> Un-Match : <span id="umatch"></span></h1>
-            </div>
-            <div class="col">
+                <div class="accordion" id="accordionExample">
+                    <div class="card">
+                        <div class="card-header alert-success" id="headingOne">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
+                                    aria-expanded="true" aria-controls="collapseOne">
+                                    <h1> Matched : <span id="ematch"></span></h1>
+                                </button>
+                            </h2>
+                        </div>
 
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                            <div class="card-body" id="ematch_body">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header alert-warning" id="headingTwo">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo"
+                                    aria-expanded="false" aria-controls="collapseTwo">
+
+                                    <h1> Partial Match : <span id="pmatch"></span></h1>
+
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                            <div class="card-body" id="pmatch_body"></div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header alert-danger" id="headingThree">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree"
+                                aria-expanded="false" aria-controls="collapseThree">
+
+                                <h1> Un-Match : <span id="umatch"></span></h1>
+
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                        <div class="card-body">
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        <div class="col-1">
+
+        </div>
+    </div>
     </div>
 
     <script>
@@ -45,10 +94,59 @@
                         response = JSON.parse(xmlhttp.responseText);
                         let total_ematch = response.filter((item) => item.matchtype === "EXCAT");
                         let total_pmatch = response.filter((item) => item.matchtype.includes("PARTIAL"));
-                        let total_umatch = response.length - (total_pmatch.length + total_ematch.length);
+                        let total_umatch = response.length - (total_pmatch.length + (total_ematch.length * 2));
                         document.getElementById("ematch").innerHTML = total_ematch.length;
                         document.getElementById("pmatch").innerHTML = total_pmatch.length;
                         document.getElementById("umatch").innerHTML = total_umatch;
+
+                        let contentHead = '<table class="table"><tbody>';
+                        let contentRow = '<tr><td></td><td></td></tr>';
+                        let contentEnd = '</tbody></table>';
+                        total_ematch.map((item) => {
+                            let i = item.matchid;
+                            let j = item._20;
+                            //console.log(item._id + '----' + item.matchid);
+                            response.filter((subitem) => {
+                                if (subitem._id === i) {
+                                    console.log("================================>>>>>>");
+                                    contentRow += '<tr><td>' + subitem._20 + '</td><td>' + j +
+                                        '</td></tr>';
+                                    return true;
+                                }
+
+                            });
+                        });
+                        /*
+                        response.map((item) => {
+                            console.log("running for " + item._id);
+                            let stub = total_ematch.filter((subitem) => {
+                                //console.log(subitem.matchid === item._id);
+                                //console.log(subitem.matchid + '----' + item._id + '-----' + item.matchid);
+                                return item.matchid === subitem._id;
+                            });
+                            console.log(stub.length);
+                            console.log(response.length);
+                            console.log(total_ematch.length);
+                            contentRow += '<tr><td>' + item._id + '</td><td>' + stub._id + '</td></tr>';
+                        }); */
+                        document.getElementById('ematch_body').innerHTML = contentHead + contentRow + contentEnd;
+                        contentRow = "";
+                        total_pmatch.map((item) => {
+                            let i = item.matchid;
+                            let j = item._id;
+                            console.log(item._id + '----' + item.matchid);
+                            response.filter((subitem) => {
+                                if (subitem._id === i) {
+                                    console.log("================================>>>>>>");
+                                    contentRow += '<tr><td>' + subitem._id + '</td><td>' + j +
+                                        '</td></tr>';
+                                    return true;
+                                }
+
+                            });
+                        });
+
+                        document.getElementById('pmatch_body').innerHTML = contentHead + contentRow + contentEnd;
 
                         console.log(total_ematch.length);
                         //document.getElementById("myDiv").innerHTML = xmlhttp.responseText;

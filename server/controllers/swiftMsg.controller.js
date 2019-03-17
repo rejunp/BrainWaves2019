@@ -38,7 +38,7 @@ exports.swiftMsgParser = (agent, filename, msgContent) => {
         return acc;
     }, msgObj);
 
-    console.log(msgBreakUp);
+    //console.log(msgBreakUp);
     return msgBreakUp;
     //    console.log(msg);
 

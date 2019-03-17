@@ -68,11 +68,11 @@ exports.findExcatMatch = (suc, rej) => {
                 });
                 msg.matchid = matchDoc[0]._id;
                 msg.matchtype = "EXCAT";
-                console.log(msg);
+               // console.log(msg);
                 return msg;
             });
             full = [...sg, ...cp];
-            console.log(full.length);
+           // console.log(full.length);
             suc(full);
         });
     });
@@ -89,7 +89,7 @@ exports.findCloseMatch = (suc, rej) => {
         // perform actions on the collection object
         db.find({}).toArray(function (err, result) {
             if (err) throw err;
-            console.log(result.length);
+            //console.log(result.length);
             let full = [];
             let sg = result.filter(e => e.agent === "sg_msgs");
             let cp = result.filter(e => e.agent === "cp_msgs");
@@ -97,8 +97,9 @@ exports.findCloseMatch = (suc, rej) => {
             let highScr = 0;
             let winnerId = '';
             sg = sg.map(msg => {
-                console.log('Checking for--' + msg._id);
-                console.log('Checking for--' + msg._20);
+              //  console.log('Checking for--' + msg._id);
+
+                //console.log('Checking for--' + msg._20);
                 highScr = 0;
                 let matchDoc = cp.map((cpmsg) => {
                     matchScr = 0;
@@ -113,7 +114,7 @@ exports.findCloseMatch = (suc, rej) => {
                     if (cpmsg.BUY_57 === msg.SELL_57) matchScr++;
                     if (cpmsg.BUY_58 === msg.SELL_58) matchScr++;
                     if (matchScr === 10) {
-                        console.log("Crossed 10...");
+                     //   console.log("Crossed 10...");
                         if (cpmsg._30V === msg._30V) matchScr++;
                         if (cpmsg._36 === msg._36) matchScr++;
                         if (cpmsg._32B === msg._33B) matchScr++;
@@ -122,7 +123,7 @@ exports.findCloseMatch = (suc, rej) => {
                             highScr = matchScr;
                             winnerId = cpmsg._id;
                         }
-                        console.log(matchScr);
+                       // console.log(matchScr);
 
                     } else {
                         //msg.matchid = matchDoc[0]._id;
@@ -131,11 +132,11 @@ exports.findCloseMatch = (suc, rej) => {
 
                 });
 
-                console.log(">>>>>>>>>>>>>>>>>>high scr -" + highScr);
-                console.log(">>>>>>>>>>>>>>>>>>winnerId -" + winnerId);
+                //console.log(">>>>>>>>>>>>>>>>>>high scr -" + highScr);
+                //console.log(">>>>>>>>>>>>>>>>>>winnerId -" + winnerId);
 
                 if (highScr === 14) {
-                    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>Crossed 14...");
+                  //  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>Crossed 14...");
                     msg.matchid = winnerId;
                     msg.matchtype = "EXCAT";
                 } else if (highScr === 13 || highScr === 12) {

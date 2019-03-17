@@ -47,7 +47,7 @@ const handleFile = (filename, content) => {
     //console.log(`${filename} ==> ${content}`);
 }*/
 
-cron.schedule("10 * * * * *", function () {
+cron.schedule("30 * * * * *", function () {
     console.log("hello from Cron!");
     console.log("PATH::==>" + path.join(__dirname, '../public', 'data', 'sg_msg'));
     //todo : change to property file
