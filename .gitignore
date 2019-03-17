@@ -5,3 +5,5 @@
 /node_modules/
 /client/node_modules/
 /server/node_modules/
+/server/public/data/sg_msg/processed/
+/server/public/data/client_msg/processed/

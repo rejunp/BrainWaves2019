@@ -21,7 +21,7 @@ const readFiles = (agent, dirname, onError) => {
             //tmp = swift.swiftMsgParser(filename, content);
             //console.log('processing done ---' + acc);
             //tmp = onFileContent(filename, content);
-            acc = [...acc, swift.swiftMsgParser(filename, content)];
+            acc = [...acc, swift.swiftMsgParser(agent, filename, content)];
             //console.log('processing done 2222---' + acc);
             //uploadFlag = true;
             fs.rename(filePath, processedDest + filename, (err) => {
@@ -58,7 +58,7 @@ cron.schedule("10 * * * * *", function () {
         throw err;
     });
 
-    readFiles('client_msgs', clientMsgPath, function (err) {
+    readFiles('cp_msgs', clientMsgPath, function (err) {
         throw err;
     });
 

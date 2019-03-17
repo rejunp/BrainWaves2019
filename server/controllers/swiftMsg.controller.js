@@ -1,6 +1,6 @@
 const dbServer = require('../models/mongo');
 
-exports.swiftMsgParser = (filename, msgContent) => {
+exports.swiftMsgParser = (agent, filename, msgContent) => {
     console.log('Inside swiftMsgParser...');
 
     let msgContentStart = msgContent.indexOf('4:') + 3;
@@ -10,7 +10,10 @@ exports.swiftMsgParser = (filename, msgContent) => {
     let msgBreakUp = msg.split("\n");
 
     let msgObj = {
-        'filename': filename
+        'filename': filename,
+        'agent': agent,
+        'matchid': '$$',
+        'matchtype': '$$'
     };
 
     let buySellFlag = 'N';
@@ -46,21 +49,30 @@ exports.swiftMsgUpload = (agent, content) => {
     dbServer.fnUploadMsg(agent, content);
 }
 
-
 exports.swiftFindExcatMatch = (req, res) => {
     console.log("Inside swiftFindExcatMatch...");
-    /*   let sg_msgs;
-    const viewResult = (sg) => {
-        // sg_msgs = msg;
-        console.log("sg_msgs_count" + sg.length);
-       // console.log("sg_msgs_count" + cp.length);
-    };
+    let responsePromise = new Promise((suc, rej) => {
+        dbServer.findExcatMatch(suc, rej);
+    });
 
-    dbServer.findAll(viewResult);
-    let client_msgs = dbServer.findAll("client_msgs");
- */
-    dbServer.simplePipeline();
-    //console.log("client_msgs" + client_msgs.length);
-    res.json("hi");
+    responsePromise.then((s) => {
+        console.log("done..." + s.length);
+        res.json(s);
+    }, (e) => {
+        console.log('error');
+    });
+}
 
+exports.swiftFindCloseMatch = (req, res) => {
+    console.log("Inside swiftFindExcatMatch...");
+    let responsePromise = new Promise((suc, rej) => {
+        dbServer.findCloseMatch(suc, rej);
+    });
+
+    responsePromise.then((s) => {
+        console.log("done..." + s.length);
+        res.json(s);
+    }, (e) => {
+        console.log('error');
+    });
 }
