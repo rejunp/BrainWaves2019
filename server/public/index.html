@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+        crossorigin="anonymous">
+    <title>Swift Clash</title>
+</head>
+
+<body onload="loadXMLDoc()">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">Swift Clash</h1>
+            <p class="lead">Swift Match Engine.</p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+            </div>
+            <div class="col">
+                <h1> Matched : <span id="ematch"></span></h1>
+                <h1> Partial Match : <span id="pmatch"></span></h1>
+                <h1> Un-Match : <span id="umatch"></span></h1>
+            </div>
+            <div class="col">
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var response = '';
+
+        function loadXMLDoc() {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == XMLHttpRequest.DONE) { // XMLHttpRequest.DONE == 4
+                    if (xmlhttp.status == 200) {
+                        response = JSON.parse(xmlhttp.responseText);
+                        let total_ematch = response.filter((item) => item.matchtype === "EXCAT");
+                        let total_pmatch = response.filter((item) => item.matchtype.includes("PARTIAL"));
+                        let total_umatch = response.length - (total_pmatch.length + total_ematch.length);
+                        document.getElementById("ematch").innerHTML = total_ematch.length;
+                        document.getElementById("pmatch").innerHTML = total_pmatch.length;
+                        document.getElementById("umatch").innerHTML = total_umatch;
+
+                        console.log(total_ematch.length);
+                        //document.getElementById("myDiv").innerHTML = xmlhttp.responseText;
+                    } else if (xmlhttp.status == 400) {
+                        alert('There was an error 400');
+                    } else {
+                        alert('something else other than 200 was returned');
+                    }
+                }
+            };
+
+            xmlhttp.open("GET", "/api/v2/getexcatplusclosefit", true);
+            xmlhttp.send();
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
